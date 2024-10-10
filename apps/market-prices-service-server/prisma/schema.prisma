@@ -1,0 +1,57 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Crop {
+  createdAt      DateTime        @default(now())
+  id             String          @id @default(cuid())
+  liveUpdates    LiveUpdate[]
+  name           String?
+  priceHistories PriceHistory[]
+  season         EnumCropSeason?
+  typeField      String?
+  updatedAt      DateTime        @updatedAt
+}
+
+model Market {
+  createdAt      DateTime       @default(now())
+  id             String         @id @default(cuid())
+  liveUpdates    LiveUpdate[]
+  location       String?
+  name           String?
+  priceHistories PriceHistory[]
+  updatedAt      DateTime       @updatedAt
+}
+
+model LiveUpdate {
+  createdAt     DateTime  @default(now())
+  crop          Crop?     @relation(fields: [cropId], references: [id])
+  cropId        String?
+  id            String    @id @default(cuid())
+  market        Market?   @relation(fields: [marketId], references: [id])
+  marketId      String?
+  time          DateTime?
+  updateMessage String?
+  updatedAt     DateTime  @updatedAt
+}
+
+model PriceHistory {
+  createdAt DateTime  @default(now())
+  crop      Crop?     @relation(fields: [cropId], references: [id])
+  cropId    String?
+  date      DateTime?
+  id        String    @id @default(cuid())
+  market    Market?   @relation(fields: [marketId], references: [id])
+  marketId  String?
+  price     Float?
+  updatedAt DateTime  @updatedAt
+}
+
+enum EnumCropSeason {
+  Option1
+}
